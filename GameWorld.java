@@ -15,7 +15,7 @@ public class GameWorld extends Observable {
 	private int clockTick = 0; 
 	private int livesRemaining = 3;
 	private boolean sound = true;
-	private int width = 775, height = 650; 
+	private int width = 775, height = 730; 
 	private int numberOfBases = 5;
 	public BGSound bgsound;
 	public Sounds explosion;
