@@ -1,4 +1,4 @@
-package com.mycompany.a3;
+package com.mycompany.a4;
 
 import com.codename1.charts.models.Point;
 import com.codename1.ui.Graphics;
@@ -35,12 +35,9 @@ public class Base extends Fixed implements IDrawble{
 	@Override
 	public void draw(Graphics g, Point pCmpRelPrnt) {
 
-		
-		
-		
 		int xLoc = (int) (pCmpRelPrnt.getX() + this.locationGetter().getX());
 		int yLoc = (int) (pCmpRelPrnt.getY() + this.locationGetter().getY());
-		
+		System.out.print("base  :" + this.locationGetter().getX() + "\n");
 		float [] xPoints = {xLoc-this.sizeGetter() ,xLoc+this.sizeGetter() , xLoc} ;
 		float [] yPoints = {yLoc - this.sizeGetter() /2 ,yLoc - this.sizeGetter() /2 , yLoc + this.sizeGetter() / 2} ;
 		System.out.print(yPoints[0] + " \n");

@@ -1,4 +1,4 @@
-package com.mycompany.a3;
+package com.mycompany.a4;
 
 import java.util.Iterator;
 import java.util.Observable;
@@ -10,9 +10,9 @@ import com.codename1.ui.Container;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.Transform;
 import com.codename1.ui.plaf.Border;
-import com.mycompany.a3.GameObject;
-import com.mycompany.a3.IIterator;
-import com.mycompany.a3.IDrawble;
+import com.mycompany.a4.GameObject;
+import com.mycompany.a4.IIterator;
+import com.mycompany.a4.IDrawble;
 
 public class MapView extends Container implements Observer {
 	private GameWorld gw;
@@ -20,6 +20,7 @@ public class MapView extends Container implements Observer {
 	Transform worldToND, ndToDisplay, theVTM ;
 	private Game ga;
 	private float winLeft, winRight, winTop, winBottom;
+	private float height = 775, width = 730;
 	private boolean position;
 	MapView(GameWorld gw, Game g){
 		this.gw = gw ;
@@ -49,7 +50,6 @@ public class MapView extends Container implements Observer {
 		GameObject cur;
 		float winHeight = winTop - winBottom;
 		float winWidth = winRight - winLeft;
-
 		IIterator itr = gw.getGameCollection().getIterator();
 
 		while(itr.hasNext()) {
@@ -63,12 +63,19 @@ public class MapView extends Container implements Observer {
 			//apply scale associated with display mapping
 			gXform.scale(1, -1);
 			gXform.translate(-getAbsoluteX(), -getAbsoluteY());
-			/*theVTM = ndToDisplay.copy();
+			theVTM = ndToDisplay.copy();
 			theVTM.concatenate(worldToND);
 			gXform.translate(getAbsoluteX(),getAbsoluteY());
 			gXform.concatenate(theVTM);
-			gXform.concatenate(theVTM);
-			gXform.translate(-getAbsoluteX(), -getAbsoluteY());*/
+			//gXform.concatenate(theVTM);
+			
+			gXform.translate(-getAbsoluteX(), -getAbsoluteY());
+			gXform.translate(getAbsoluteX(), getAbsoluteY());
+			gXform.translate(0, winHeight);
+			//apply scale associated with display mapping
+			gXform.scale(1, -1);
+			gXform.translate(-getAbsoluteX(), -getAbsoluteY());
+			System.out.println("translate: "+ this.getAbsoluteX());
 			Point pScrnRelPrnt= new Point(gXform.getTranslateX(), gXform.getTranslateY());
 			g.setTransform(gXform);
 			cur= (GameObject)itr.getNext() ;

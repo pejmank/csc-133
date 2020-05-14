@@ -1,15 +1,24 @@
-package com.mycompany.a3;
+package com.mycompany.a4;
 
 import com.codename1.charts.models.Point;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.Transform;
 
 public class PlayerCyborg extends Cyborg implements IDrawble{
 	private GameWorld gw; 
 	private static PlayerCyborg plCyborg;
+	private Transform myTranslation ;
+	private Transform myRotation ;
+	private Transform myScale ;
+	int e = 1;
 	private PlayerCyborg(Point p, int s, int col, int spd, int head, int enrgLevel, int dmgLimit, GameWorld g){
 		super(p, s, col, spd, head, enrgLevel, dmgLimit, g);
 		gw = g;
+		myTranslation = Transform.makeIdentity(); 
+		myRotation = Transform.makeIdentity(); 
+		myScale = Transform.makeIdentity();
+		
 	}
 
 	public static PlayerCyborg getPlayerCyborg(Point p, int s, int col, int spd, int head, int enrgLevel, int dmgLimit, GameWorld g) { 
@@ -23,12 +32,31 @@ public class PlayerCyborg extends Cyborg implements IDrawble{
 
 	public void draw(Graphics g, Point pComRelPrnt) {
 		// TODO Auto-generated method stub
+		Transform gXform = Transform.makeIdentity();
+		g.getTransform(gXform);
+		Transform gOrigXform = gXform.copy(); //save the original xform
+
+		gXform.translate(pComRelPrnt.getX(),pComRelPrnt.getY());
+		gXform.translate(myTranslation.getTranslateX(), myTranslation.getTranslateY());
+		gXform.concatenate(myRotation); 
+		gXform.scale(myScale.getScaleX(), myScale.getScaleY());
+		gXform.translate(-pComRelPrnt.getX(),-pComRelPrnt.getY());
+		g.setTransform(gXform);
 		 g.setColor(this.getColor());
+		 Legs [] legs= new Legs[2];
+		 legs[0] = new Legs((int)this.locationGetter().getX(), (int)this.locationGetter().getY());
+		 legs[0].translate(0, e * 5);
+		 legs[0].draw(g, pComRelPrnt, this.locationGetter(), 0);
+		 legs[1] = new Legs((int)this.locationGetter().getX(), (int)this.locationGetter().getY());
+		 legs[1].translate(0, e * 5);
+		 legs[0].draw(g, pComRelPrnt, this.locationGetter(), this.sizeGetter());
+
 		 int xLoc = (int) (pComRelPrnt.getX()+this.locationGetter().getX());
 		 int yLoc =  (int) (pComRelPrnt.getY()+this.locationGetter().getY());
 		 
 		 g.fillRect( xLoc - this.sizeGetter() /2,yLoc - this.sizeGetter() / 2, this.sizeGetter(), this.sizeGetter());
-
+		 g.setTransform(gOrigXform);
+		 e = -e;
 	}
 	public void colidedWithDrone() {
 		this.increaseDamage(3);
