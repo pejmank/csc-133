@@ -30,7 +30,6 @@ public class Drone extends Movable implements IDrawble{
 	}
 	
 	public void draw(Graphics  g,  Point  pCmpRelPrnt) {
-		
 		 g.setColor(this.getColor());
 		 int xLoc = (int) (pCmpRelPrnt.getX()+this.locationGetter().getX());
 		 int yLoc =  (int) (pCmpRelPrnt.getY()+this.locationGetter().getY());

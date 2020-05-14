@@ -2,6 +2,7 @@ package com.mycompany.a3;
 
 import com.codename1.charts.models.Point;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.Transform;
 
 public class Base extends Fixed implements IDrawble{
 	private int sequenceNumber; 
@@ -34,17 +35,26 @@ public class Base extends Fixed implements IDrawble{
 	@Override
 	public void draw(Graphics g, Point pCmpRelPrnt) {
 
-		g.setColor(this.getColor());
+		
+		
 		
 		int xLoc = (int) (pCmpRelPrnt.getX() + this.locationGetter().getX());
 		int yLoc = (int) (pCmpRelPrnt.getY() + this.locationGetter().getY());
 		
-		int [] xPoints = {xLoc-this.sizeGetter() ,xLoc+this.sizeGetter() , xLoc} ;
-		int [] yPoints = {yLoc - this.sizeGetter() /2 ,yLoc - this.sizeGetter() /2 , yLoc + this.sizeGetter() / 2} ;
-		if(this.isSelected())
-			g.drawPolygon(xPoints, yPoints, 3);
+		float [] xPoints = {xLoc-this.sizeGetter() ,xLoc+this.sizeGetter() , xLoc} ;
+		float [] yPoints = {yLoc - this.sizeGetter() /2 ,yLoc - this.sizeGetter() /2 , yLoc + this.sizeGetter() / 2} ;
+		System.out.print(yPoints[0] + " \n");
+		g.setColor(this.getColor());
+		System.out.print(yPoints[0] + " \n");
+
+		if(this.isSelected()) {
+		int xp[] = {(int)xPoints[0], (int)xPoints[1], (int)xPoints[2]}; 	
+		int yp[] = {(int)yPoints[0], (int)yPoints[1], (int)yPoints[2]}; 	
+
+			g.drawPolygon(xp, yp, 3);
+		}
 		else
-		g.fillTriangle(xPoints[0], yPoints[0], xPoints[1], yPoints[1], xPoints[2], yPoints[2]);
+		g.fillTriangle((int)xPoints[0], (int)yPoints[0], (int)xPoints[1], (int)yPoints[1], (int)xPoints[2], (int)yPoints[2]);
 		
 		g.setColor(0);
 		g.drawString(Integer.toString(sequenceNumber), xLoc, yLoc - this.sizeGetter() / 2 );

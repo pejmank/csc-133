@@ -8,18 +8,27 @@ import com.codename1.charts.models.Point;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Container;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.Transform;
 import com.codename1.ui.plaf.Border;
+import com.mycompany.a3.GameObject;
+import com.mycompany.a3.IIterator;
+import com.mycompany.a3.IDrawble;
 
 public class MapView extends Container implements Observer {
 	private GameWorld gw;
 	private Graphics myGraphics;
+	Transform worldToND, ndToDisplay, theVTM ;
 	private Game ga;
+	private float winLeft, winRight, winTop, winBottom;
 	private boolean position;
 	MapView(GameWorld gw, Game g){
 		this.gw = gw ;
 		this.getAllStyles().setBorder(Border.createLineBorder(4, ColorUtil.rgb(255, 0, 0)));
 		ga = g;
-
+		winLeft = winBottom = 0;
+		
+		winRight = 775;
+		winTop = 670;
 
 	}
 
@@ -37,16 +46,37 @@ public class MapView extends Container implements Observer {
 		super.paint(g);
 		Point pCmpRelPrnt = new Point(getX(), getY());
 		myGraphics = g;
-		GameObject cur ;
-
+		GameObject cur;
+		float winHeight = winTop - winBottom;
+		float winWidth = winRight - winLeft;
 
 		IIterator itr = gw.getGameCollection().getIterator();
 
 		while(itr.hasNext()) {
+			worldToND = buildWorldToNDXform(winWidth, winHeight, winLeft, winBottom);
+			ndToDisplay = buildNDToDisplayXform(this.getWidth(), this.getHeight());
+			Transform gXform = Transform.makeIdentity();
+			g.getTransform(gXform);
+
+			gXform.translate(getAbsoluteX(), getAbsoluteY());
+			gXform.translate(0, winHeight);
+			//apply scale associated with display mapping
+			gXform.scale(1, -1);
+			gXform.translate(-getAbsoluteX(), -getAbsoluteY());
+			/*theVTM = ndToDisplay.copy();
+			theVTM.concatenate(worldToND);
+			gXform.translate(getAbsoluteX(),getAbsoluteY());
+			gXform.concatenate(theVTM);
+			gXform.concatenate(theVTM);
+			gXform.translate(-getAbsoluteX(), -getAbsoluteY());*/
+			Point pScrnRelPrnt= new Point(gXform.getTranslateX(), gXform.getTranslateY());
+			g.setTransform(gXform);
 			cur= (GameObject)itr.getNext() ;
 			if(cur instanceof IDrawble ) {
 				((IDrawble) cur ).draw(g, pCmpRelPrnt);
 			}
+			
+			g.resetAffine();
 		}
 
 		
@@ -99,6 +129,19 @@ public class MapView extends Container implements Observer {
 		}
 	public void setPosition() {
 		position = !position;
+	}
+	private Transform buildWorldToNDXform(float winWidth, float winHeight, float winLeft, float winBottom){
+		Transform tmpXfrom = Transform.makeIdentity(); 
+		tmpXfrom.scale( (1/winWidth) , (1/winHeight) ); 
+		tmpXfrom.translate(-winLeft,-winBottom);
+		return tmpXfrom;
+	}
+	private Transform buildNDToDisplayXform (float displayWidth, float displayHeight){
+		Transform tmpXfrom = Transform.makeIdentity(); 
+		tmpXfrom.translate(0, displayHeight); 
+		tmpXfrom.scale(displayWidth, -displayHeight); 
+
+		return tmpXfrom;
 	}
 }
 	
