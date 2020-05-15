@@ -118,4 +118,24 @@ public class PlayerCyborg extends Cyborg implements IDrawble{
 		}
 		
 	}
+	public void move(int time, int height, int width) {
+		setAngle(this.angleGetter());
+		Point oldLocation = this.locationGetter();
+   	 int currentX = (int) this.locationGetter().getX();
+   	 int currentY = (int) this.locationGetter().getY();
+		
+   	 double dist = ( this.speedGetter() * (time/time) ) * .75;
+
+		Double deltaXDouble = (Math.cos(Math.toRadians(90 - this.headingGetter())) * dist);
+		Double deltaYDouble = (Math.sin(Math.toRadians(90 - this.headingGetter())) * dist);
+		Integer deltaX = deltaXDouble.intValue();
+		Integer deltaY = deltaYDouble.intValue();
+		
+		currentX += deltaXDouble * dirX;
+		currentY += deltaYDouble * dirY;
+		
+		Point newLocation = new Point((currentX), (currentY));
+		this.locationSetter(newLocation);
+				
+	}
 }
