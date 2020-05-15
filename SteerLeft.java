@@ -12,7 +12,6 @@ public class SteerLeft extends Command{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		System.out.print("left");
 		gw.steerLeft();
 	}
 }

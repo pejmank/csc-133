@@ -22,6 +22,7 @@ public class MapView extends Container implements Observer {
 	private float winLeft, winRight, winTop, winBottom;
 	private float height = 775, width = 730;
 	private boolean position;
+	private Point pPrevDragLoc = new Point(-1, -1);
 	MapView(GameWorld gw, Game g){
 		this.gw = gw ;
 		this.getAllStyles().setBorder(Border.createLineBorder(4, ColorUtil.rgb(255, 0, 0)));
@@ -148,6 +149,67 @@ public class MapView extends Container implements Observer {
 		tmpXfrom.scale(displayWidth, -displayHeight); 
 
 		return tmpXfrom;
+	}
+	public void zoomIn(){
+		double h = winTop - winBottom;
+		double w = winRight - winLeft;
+		winLeft += w*0.05;
+		winRight -= w*0.05;
+		winTop -= h*0.05;
+		winBottom += h*0.05;
+		this.repaint();
+	}
+	
+	// zooms out 5%
+	public void zoomOut(){
+		double h = winTop - winBottom;
+		double w = winRight - winLeft;
+		winLeft -= w*0.05;
+		winRight += w*0.05;
+		winTop += h*0.05;
+		winBottom -= h*0.05;
+		this.repaint();
+	}
+	
+	public void panLeft(){
+		winLeft += 5;
+		winRight += 5;
+	}
+	
+	public void panRight(){
+		winLeft -= 5;
+		winRight -= 5;
+	}
+	
+	public void panUp(){
+		winTop -= 5;
+		winBottom -= 5;
+	}
+	
+	public void panDown(){
+		winTop += 5;
+		winBottom += 5;
+	}
+	
+	@Override
+	public boolean pinch(float scale){
+	if(scale < 1.0){
+		zoomOut();
+	}else if(scale>1.0){
+		zoomIn();
+	}
+	   return true;
+	}
+	@Override
+	public void pointerDragged(int x, int y)
+	{
+	if (pPrevDragLoc.getX() != -1) {
+	if (pPrevDragLoc.getX() < x) panRight();
+	else if (pPrevDragLoc.getX() > x) panLeft();
+	if (pPrevDragLoc.getY() < y) panDown();
+	else if (pPrevDragLoc.getY() > y) panUp();
+	}
+	pPrevDragLoc.setX(x); pPrevDragLoc.setY(y); 
 	}
 }
 	
