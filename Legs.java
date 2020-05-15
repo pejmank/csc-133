@@ -32,9 +32,6 @@ public class Legs {
 	  public void translate (float tx, float ty) { 
 		  myTranslation.translate (tx, ty);
 	  }
-	  public void incA() {
-		  ange = ange + 40;
-	  }
 	  public void draw (Graphics g, Point pCmpRelPrnt, Point pCmpRelScrn, int s) {
 		Transform gXform = Transform.makeIdentity();
 		g.getTransform(gXform);
@@ -42,12 +39,10 @@ public class Legs {
 		gXform.translate(pCmpRelScrn.getX(),pCmpRelScrn.getY());
 		gXform.translate(- s / 2, myTranslation.getTranslateY());
 		gXform.concatenate(myRotation);
-		System.out.print("angele: " + ange);
 		gXform.scale(myScale.getScaleX(), myScale.getScaleY());
 		gXform.translate(-pCmpRelScrn.getX(),-pCmpRelScrn.getY());
 
 		g.setTransform(gXform);
-		System.out.print("get x: " +(int)bottom.getX() + "translate c:" + pCmpRelPrnt.getX() ); 
 		g.drawRect((int)bottom.getX() + (int)pCmpRelPrnt.getX(), (int)bottom.getY(), width, height);
 		g.setTransform(gOrigXform); //restore the original xform (remove LTs) //do not use resetAffine() in draw()! Instead use getTransform()/setTransform(gOrigForm)
 		}

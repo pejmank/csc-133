@@ -99,6 +99,10 @@ public class GameWorld extends Observable {
 		
 		
 	}
+	public void createShockWave(Point p, int col, int spd) {
+		this.theGameCollection.addShockWave(p, col, spd);
+		this.changed();
+	}
 	public boolean getSound() {
 		return sound;
 	}
@@ -161,7 +165,7 @@ public class GameWorld extends Observable {
 		
 		this.getPlayerCyborg().colidedWithDrone();
 		damageExceededCheck();
-		this.changed();
+		this.changed(); 
 
 		
 	}

@@ -37,7 +37,7 @@ public class MapView extends Container implements Observer {
 	public void update(Observable observable, Object data) {
 		
 	GameWorld gw = (GameWorld)observable;
-	gw.displayMap();
+	//gw.displayMap();
 	this.repaint();
 
 	
@@ -75,7 +75,6 @@ public class MapView extends Container implements Observer {
 			//apply scale associated with display mapping
 			gXform.scale(1, -1);
 			gXform.translate(-getAbsoluteX(), -getAbsoluteY());
-			System.out.println("translate: "+ this.getAbsoluteX());
 			Point pScrnRelPrnt= new Point(gXform.getTranslateX(), gXform.getTranslateY());
 			g.setTransform(gXform);
 			cur= (GameObject)itr.getNext() ;

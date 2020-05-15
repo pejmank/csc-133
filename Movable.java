@@ -14,6 +14,13 @@ public class Movable extends GameObject{
 		speed = spd;
 		heading = head;
 	}
+	Movable(Point p, int s, int col, int head){
+		super(p, s, col);
+		heading = head;
+		
+
+	}
+	
 	public void reset(Point p, int s, int col, int spd, int head) {
 		super.reset(p, s, col);
 		speed = spd;

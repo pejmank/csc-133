@@ -11,6 +11,7 @@ public class PlayerCyborg extends Cyborg implements IDrawble{
 	private Transform myTranslation ;
 	private Transform myRotation ;
 	private Transform myScale ;
+	Point hold = new Point(); 
 	int e = 1;
 	private PlayerCyborg(Point p, int s, int col, int spd, int head, int enrgLevel, int dmgLimit, GameWorld g){
 		super(p, s, col, spd, head, enrgLevel, dmgLimit, g);
@@ -32,6 +33,10 @@ public class PlayerCyborg extends Cyborg implements IDrawble{
 
 	public void draw(Graphics g, Point pComRelPrnt) {
 		// TODO Auto-generated method stub
+		
+		hold.setX((pComRelPrnt.getX()+this.locationGetter().getX()));
+		hold.setY((pComRelPrnt.getY()+this.locationGetter().getY()));
+			
 		Transform gXform = Transform.makeIdentity();
 		g.getTransform(gXform);
 		Transform gOrigXform = gXform.copy(); //save the original xform
@@ -63,11 +68,14 @@ public class PlayerCyborg extends Cyborg implements IDrawble{
 		damageSpeedCheck();
 		gw.getCrashSound().play();
 		colorFader(0, 15, 15);
+		gw.createShockWave(hold, ColorUtil.BLACK, 5);
+		//v.draw(g, pCmpRelPrnt);
 	}
 	public void collisionWithNPC() {
 		this.increaseDamage(4);
 		gw.getCrashSound().play();
 		colorFader(0, 18, 18);
+		gw.createShockWave(hold, ColorUtil.BLACK, 5);
 	}
 	
 	public boolean collidesWith(GameObject otherObject) {

@@ -37,12 +37,9 @@ public class Base extends Fixed implements IDrawble{
 
 		int xLoc = (int) (pCmpRelPrnt.getX() + this.locationGetter().getX());
 		int yLoc = (int) (pCmpRelPrnt.getY() + this.locationGetter().getY());
-		System.out.print("base  :" + this.locationGetter().getX() + "\n");
 		float [] xPoints = {xLoc-this.sizeGetter() ,xLoc+this.sizeGetter() , xLoc} ;
 		float [] yPoints = {yLoc - this.sizeGetter() /2 ,yLoc - this.sizeGetter() /2 , yLoc + this.sizeGetter() / 2} ;
-		System.out.print(yPoints[0] + " \n");
 		g.setColor(this.getColor());
-		System.out.print(yPoints[0] + " \n");
 
 		if(this.isSelected()) {
 		int xp[] = {(int)xPoints[0], (int)xPoints[1], (int)xPoints[2]}; 	

@@ -1,20 +1,24 @@
-/*package com.mycompany.a4;
+package com.mycompany.a4;
 
 import java.util.Random;
 import java.util.Vector;
 
 import com.codename1.charts.models.Point;
+import com.codename1.ui.Graphics;
+import com.codename1.util.MathUtil;
 
-public class ShockWave extends Movable{
+public class ShockWave extends Movable implements IDrawble{
 
 	// the lifespan of a shock wave, in ms
-	private int lifeLength = 1500;
+	private int lifeLength = 16;
 	
 	// the speed of a shock wave
 	private int speed = 200;
 	private int MAX_LEVEL = 8;
 	private float epsilon = (float)0.001;
 	Random r = new Random();
+	int hold = 20;
+	float arr[] = new float[8];
 	
 	// this shock waves current lifespan
 	private int lifeSpan;
@@ -23,10 +27,11 @@ public class ShockWave extends Movable{
 	Vector controlPointVector = new Vector();
 	
 	
-	ShockWave(Point p, int speed, int color){
-		super(p, color, speed);
+	ShockWave(Point p, int color, int speed, int heading){
+		super(p, color, speed, heading);
 		lifeSpan = lifeLength;
 		initPoints();
+
 	}
 	
 	
@@ -36,82 +41,60 @@ public class ShockWave extends Movable{
 		// set up random points, don't do this for now
 		if(controlPointVector.isEmpty()){
 			// try to make semi-consistent, but still random and unique, shockwaves
-			controlPointVector.add(new ControlPoint(r.nextInt(25) - 30, r.nextInt(25) - 30));
-			controlPointVector.add(new ControlPoint(r.nextInt(25) - 30, r.nextInt(25) - 30));
-			controlPointVector.add(new ControlPoint(r.nextInt(25) + 5, r.nextInt(25)+ 5));
-			controlPointVector.add(new ControlPoint(r.nextInt(25) + 5, r.nextInt(25) + 5));	
+			controlPointVector.add(new ControlPoint( arr[0] = this.locationGetter().getX(), arr[1] =this.locationGetter().getY()));
+			controlPointVector.add(new ControlPoint(arr[2] =r.nextInt(500) + 100,arr[3] = r.nextInt(500) +100));
+			controlPointVector.add(new ControlPoint(arr[4] =r.nextInt(500) + 5, arr[5] =r.nextInt(500)+ 5));
+			controlPointVector.add(new ControlPoint(arr[6] =this.locationGetter().getX(), arr[7] =this.locationGetter().getY() + 50) );	
 		}
 	}
-	
-	@Override
-	public void move(int ms){
-		super.move(ms);
-		lifeSpan -= ms;
+	public void updateP(){
+		controlPointVector.removeAllElements();
+		controlPointVector.add(new ControlPoint(arr[0]  + hold, arr[1]));
+		controlPointVector.add(new ControlPoint(arr[2], arr[3]));
+		controlPointVector.add(new ControlPoint(arr[4], arr[5]));
+		controlPointVector.add(new ControlPoint(arr[6]+ hold, arr[7]) );
+		hold += 25;
 	}
 	
-	public boolean isExpired(){
-		return (lifeSpan <= 0);
+	public void draw(Graphics  g,  Point  pCmpRelPrnt) {
+		updateP();
+		if(lifeLength > 0)
+		this.drawBezierCurve(g, this.controlPointVector, 1);
+		lifeLength--;
+		 		
 	}
-	
-	@Override
-	public String toString() {
-		// initialize the string
-		String swDetails = "ShockWave: ";
-		
-		// prep decimal formatting
-		DecimalFormat df = new DecimalFormat();
-		df.applyPattern("##.#");
-		
-		// add details to the string for...
-		
-		// location
-		swDetails += "loc=" + df.format( this.getX() ) + "," + df.format( this.getY() ) + " ";
-		
-		// color
-		swDetails += "color=[" + this.getColor().getRed() + "," + this.getColor().getGreen() + "," + this.getColor().getBlue() + "] ";
-		
-		// heading
-		swDetails += "heading=" + this.getHeading() + " ";
-		
-		// speed
-		swDetails += "speed=" + df.format( getSpeed() ) + " ";
-		
-		//return all the details
-		return swDetails;
-	}
-	
-	private void drawBezierCurve(Graphics2D g2d, Vector controlPoints, int level){
-		if( straightEnough(controlPoints)  || (level > MAX_LEVEL) ){
+	private void drawBezierCurve(Graphics g2d, Vector controlPoints, int level){
+		if( straightEnough(controlPoints) || level > MAX_LEVEL){
 			g2d.setColor(getColor());
 			g2d.drawLine( (int)((ControlPoint)controlPoints.elementAt(0)).getX(), (int)((ControlPoint)controlPoints.elementAt(0)).getY(),
 						  (int)((ControlPoint)controlPoints.elementAt(3)).getX(), (int)((ControlPoint)controlPoints.elementAt(3)).getY());
+
 		} else{
 			Vector leftPoints = new Vector(), rightPoints = new Vector();
 			subdivideCurve(controlPoints, leftPoints, rightPoints);
-			drawBezierCurve(g2d, leftPoints, level+1);
-			drawBezierCurve(g2d, rightPoints, level+1);
+			drawBezierCurve(g2d, leftPoints, level + 1);
+			drawBezierCurve(g2d, rightPoints, level + 1);
 		}
 	}
 	
 	
 	private void subdivideCurve(Vector controlPoints, Vector leftSubVector, Vector rightSubVector){
 		ControlPoint l0, l1, l2, l3, r0, r1, r2, r3;
-		
 		l0 = new ControlPoint( ((ControlPoint)controlPoints.elementAt(0)) );
 		
 		l1 = new ControlPoint( ((((ControlPoint)controlPoints.elementAt(0)).getX() + ((ControlPoint)controlPoints.elementAt(1)).getX()) / 2), 
 							   ((((ControlPoint)controlPoints.elementAt(0)).getY() + ((ControlPoint)controlPoints.elementAt(1)).getY()) / 2));
 		
-		l2 = new ControlPoint( (l1.getX()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getX() + ((ControlPoint)controlPoints.elementAt(2)).getX()) / 4), 
-							   (l1.getY()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getY() + ((ControlPoint)controlPoints.elementAt(2)).getY()) / 4));
+		l2 = new ControlPoint( (l1.getX()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getX() + ((ControlPoint)controlPoints.elementAt(2)).getX())) / 4, 
+							   (l1.getY()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getY() + ((ControlPoint)controlPoints.elementAt(2)).getY())) / 4);
 		
 		r3 = new ControlPoint( ((ControlPoint)controlPoints.elementAt(3)) );
 		
-		r2 = new ControlPoint( ((((ControlPoint)controlPoints.elementAt(2)).getX() + ((ControlPoint)controlPoints.elementAt(3)).getX()) / 2), 
-				   			   ((((ControlPoint)controlPoints.elementAt(2)).getY() + ((ControlPoint)controlPoints.elementAt(3)).getY()) / 2));
+		r2 = new ControlPoint( ((((ControlPoint)controlPoints.elementAt(2)).getX() + ((ControlPoint)controlPoints.elementAt(3)).getX())) / 2, 
+				   			   ((((ControlPoint)controlPoints.elementAt(2)).getY() + ((ControlPoint)controlPoints.elementAt(3)).getY())) / 2);
 		
-		r1 = new ControlPoint( (r2.getX()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getX() + ((ControlPoint)controlPoints.elementAt(2)).getX()) / 4), 
-				   			   (r2.getY()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getY() + ((ControlPoint)controlPoints.elementAt(2)).getY()) / 4));
+		r1 = new ControlPoint( (r2.getX()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getX() + ((ControlPoint)controlPoints.elementAt(2)).getX())) / 4, 
+				   			   (r2.getY()/2) + ((((ControlPoint)controlPoints.elementAt(1)).getY() + ((ControlPoint)controlPoints.elementAt(2)).getY())) / 4);
 		
 		l3 = new ControlPoint( ( (l2.getX() + r1.getX()) / 2), ( (l2.getY() + r1.getY()) / 2) );
 		
@@ -129,36 +112,35 @@ public class ShockWave extends Movable{
 	}
 	
 	private boolean straightEnough(Vector controlPoints){
-		
 		float d1, d2;
-		
 		// d1^2 
-		d1 = length( ((ControlPoint)controlPointVector.elementAt(0)), (((ControlPoint)controlPointVector.elementAt(1))) )
+		d1 = (length( ((ControlPoint)controlPointVector.elementAt(0)), (((ControlPoint)controlPointVector.elementAt(1))) )
 		   + length( ((ControlPoint)controlPointVector.elementAt(1)), (((ControlPoint)controlPointVector.elementAt(2))) )
-		   + length( ((ControlPoint)controlPointVector.elementAt(2)), (((ControlPoint)controlPointVector.elementAt(3))) );
-		
+		   + length( ((ControlPoint)controlPointVector.elementAt(2)), (((ControlPoint)controlPointVector.elementAt(3))) ));
+
 		// d2^2
 		d2 = length( ((ControlPoint)controlPointVector.elementAt(0)), (((ControlPoint)controlPointVector.elementAt(3))) );
-		
-		if( Math.abs(d1-d2) < EPSILON )
+
+
+
+		if( Math.abs(d1-d2) < epsilon ) {
 			return true;
+		}
 		else
 			return false;
 	}
 	
 	private float length(ControlPoint p1, ControlPoint p2){
 		float length, xDis, yDis;
-		
 		xDis = p2.getX() - p1.getX();
 		yDis = p2.getY() - p1.getY();
-		
+
 		// length = sqrt( xDis^2 + yDis^2 )
-		length =  (float)Math.sqrt( (Math.pow(xDis, 2) + Math.pow(yDis, 2)) );
-		
+		length =  (float)Math.sqrt( (MathUtil.pow((float)xDis, 2) + MathUtil.pow((float)yDis, 2)) );
 		return length;
 	}
 
-	@Override
+	/*@Override
 	public void draw(Graphics2D g2d) {
 		
 		// save the AT for restoration later
@@ -181,27 +163,14 @@ public class ShockWave extends Movable{
 		g2d.drawLine( (int)((ControlPoint)controlPointVector.elementAt(3)).getX(), (int)((ControlPoint)controlPointVector.elementAt(3)).getY(), (int)((ControlPoint)controlPointVector.elementAt(0)).getX(), (int)((ControlPoint)controlPointVector.elementAt(0)).getY() );
 	*/
 		
-		// set color and draw the bezier curve 
-/*		g2d.setColor(getColor());
+	/*	// set color and draw the bezier curve 
+	g2d.setColor(getColor());
 		drawBezierCurve(g2d, controlPointVector, 1);
 		
 		// restore the g2d object for the next object
 		g2d.setTransform(saveAT);
-	}
+	}*/
 
-	@Override
-	public void drawSelected(Graphics2D g2d) {
-		// not implemented since Shock Waves cannot
-		// be selected - see contains()
-	}
-
-	@Override
-	public boolean contains(float x, float y) {
-		// return false since Shock Waves cannot be selected
-		// note most other classes have this implemented,
-		// but commented out (for now?)
-		return false;
-	}
 
 	
 	
@@ -210,25 +179,7 @@ public class ShockWave extends Movable{
 	// there is nothing to be done when a collision occurs,
 	// so there is no need to implement detection w/it
 	
-	@Override
-	public int getLeft() {
-		return 0;
-	}
 
-	@Override
-	public int getRight() {
-		return 0;
-	}
-
-	@Override
-	public int getTop() {
-		return 0;
-	}
-
-	@Override
-	public int getBottom() {
-		return 0;
-	}
 	
 	private class ControlPoint {
 		
@@ -254,13 +205,5 @@ public class ShockWave extends Movable{
 			return y;
 		}
 		
-		public String toString(){
-			// prep decimal formatting
-			DecimalFormat df = new DecimalFormat();
-			df.applyPattern("##.#");
-			
-			return ("Control Point - X: " + df.format(x)  + " ... Y: " + df.format(y));
-		}
 	}
 }
-*/

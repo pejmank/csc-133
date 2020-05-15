@@ -1,5 +1,6 @@
 package com.mycompany.a4;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Vector;
 
 import com.codename1.charts.models.Point;
@@ -9,6 +10,7 @@ import com.codename1.charts.models.Point;
 public class GameCollection implements Icollection{
 
 	private Vector<GameObject> theGameCollection;
+	Random r = new Random();
 	
 	GameCollection(){
 		theGameCollection = new Vector<GameObject>();
@@ -35,6 +37,9 @@ public class GameCollection implements Icollection{
 	}
 	public void addEnergyStation(Point p, int s, int col, int capac) {
 		theGameCollection.add(new EnergyStation(p, s, col, capac)); 
+	}
+	public void addShockWave(Point p, int col, int spd){
+		theGameCollection.add(new ShockWave(p, col, spd, r.nextInt(360)));
 	}
 	
 	
